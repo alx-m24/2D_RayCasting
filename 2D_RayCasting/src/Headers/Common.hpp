@@ -8,3 +8,4 @@
 extern sf::RenderWindow* _window;
 // Arial font
 extern sf::Font _arial;
+extern bool showMouse;

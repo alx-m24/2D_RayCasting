@@ -24,3 +24,11 @@ inline float getAngle(sf::Vector2<T> v)
 {
 	return std::atan(v.y / v.x);
 }
+
+template<class T>
+inline sf::Vector2<T> normalize(sf::Vector2<T> v)
+{
+	float mag = getMagnitude(v);
+	if (mag == 0) return { 0, 0 };
+	return { T(v.x / mag), T(v.y / mag) };
+}

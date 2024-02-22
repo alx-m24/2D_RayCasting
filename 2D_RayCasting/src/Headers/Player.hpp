@@ -9,15 +9,18 @@ private:
 	Rays* rays;
 	sf::Vector2<float>* origin;
 
-	bool topView = false, lastT = false;
+	bool lastT = false;
 
-	float mag = 250.0f;
-	float FOV = PI / 3;
+	float FOV = PI / 3; // Best Pi/3
 	float angle = 0;
-	float increment = PI / 512;
+	// Denomenator shoulder be a multiple of 2
+	float increment = PI / 1024; // bests: 512(220 FPS) | 1024(120 FPS)
 public:
 	Player(sf::Vector2<float>* Origin);
 public:
+	bool topView = true;
+
 	void update();
 	void draw();
+	void move();
 };

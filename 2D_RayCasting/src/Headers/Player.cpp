@@ -16,13 +16,16 @@ Player::Player(sf::Vector2<float>* Origin) : origin(Origin)
 void Player::update()
 {
 	sf::Vector2f lastPos = this->getPosition();
+
+	move();
+
 	this->setPosition(*origin);
 
 	for (int i = 0; i < rays->getVertexCount(); ++i) {
 		(*rays)[i].position += (*origin - lastPos);
 	}
 
-	rays->update();
+	angle = rays->update(topView);
 }
 
 
@@ -31,7 +34,11 @@ void Player::draw()
 	sf::Vector2<float> winSize = sf::Vector2<float>(_window->getSize());
 
 	bool T = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::T);
-	if (T && !lastT) topView = !topView;
+	if (T && !lastT) {
+		topView = !topView;
+		_window->setMouseCursorVisible(topView);
+		showMouse = topView;
+	}
 	lastT = T;
 
 	if (!topView) {
@@ -74,5 +81,30 @@ void Player::draw()
 		_window->draw(rays->lines);
 		_window->draw(*rays);
 		_window->draw(*this);
+	}
+}
+
+void Player::move()
+{
+	if (!topView) {
+		float speed = 1.0f;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)) speed = 2.0f;
+		sf::Vector2f Velocity = { 0, 0 };
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+			Velocity += fromAngle<float>(angle);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+			Velocity -= fromAngle<float>(angle);
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+			Velocity += fromAngle<float>(angle - (PI / 2));
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+			Velocity += fromAngle<float>(angle + (PI / 2));
+		}
+
+		*origin += normalize<float>(Velocity) * speed;
 	}
 }

@@ -1,5 +1,4 @@
 #include "Ray.hpp"
-#include <iostream>
 
 Rays::Rays(sf::Vector2<float>* Origin, float fov, float Increment) : origin(Origin), FOV(fov), increment(Increment)
 {
@@ -8,8 +7,18 @@ Rays::Rays(sf::Vector2<float>* Origin, float fov, float Increment) : origin(Orig
 
 	lines.setPrimitiveType(sf::Lines);
 
+	sf::Color colors[] = {
+		sf::Color::Red,
+		sf::Color::Blue,
+		sf::Color::Green,
+		sf::Color::Yellow,
+		sf::Color::Magenta,
+		sf::Color::Cyan
+	};
+
 	for (int i = 0; i < 10; ++i) {
-		sf::Color color = rand() % 10 < 5 ? sf::Color::Red : sf::Color::Blue;
+		//sf::Color color = colors[int(rand() % std::size(colors))];
+		sf::Color color = sf::Color(rand() % 255, rand() % 255, rand() % 255);
 
 		sf::Vertex p1(sf::Vector2f(rand() % winSize.x, rand() % winSize.y));
 		sf::Vertex p2(sf::Vector2f(rand() % winSize.x, rand() % winSize.y));
@@ -20,7 +29,7 @@ Rays::Rays(sf::Vector2<float>* Origin, float fov, float Increment) : origin(Orig
 		lines.append(p1);
 		lines.append(p2);
 	}
-	
+
 	for (int i = 0; i < 10; ++i) {
 		sf::CircleShape* newCirlce = new sf::CircleShape(rand() % 50);
 
@@ -69,7 +78,6 @@ void Rays::checkCircles(int i, float curr, float* minLength)
 
 				(*this)[i].position = *origin + fromAngle<float>(angle + curr, temp + newdist);
 
-				//const sf::Color color = sf::Color::Green;
 				const sf::Color color = circle->getFillColor();
 				(*this)[i].color = color;
 				(*this)[i - 1].color = color;
@@ -108,22 +116,36 @@ void Rays::checkLines(int i, float curr, float* minLength)
 	}
 }
 
-void Rays::update()
+float Rays::update(bool topView)
 {	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left)) {
-		angle -= 0.01;
-		float curr = -FOV / 2;
-		for (int i = 1; i < this->getVertexCount(); i += 2) {
-			(*this)[i].position = *origin + fromAngle<float>(angle + curr, 200);
-			curr += increment;
+	if (topView) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left)) {
+			angle -= 0.01;
+			float curr = -FOV / 2;
+			for (int i = 1; i < this->getVertexCount(); i += 2) {
+				(*this)[i].position = *origin + fromAngle<float>(angle + curr, 200);
+				curr += increment;
+			}
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right)) {
+			angle += 0.01;
+			float curr = -FOV / 2;
+			for (int i = 1; i < this->getVertexCount(); i += 2) {
+				(*this)[i].position = *origin + fromAngle<float>(angle + curr, 200);
+				curr += increment;
+			}
 		}
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right)) {
-		angle += 0.01;
-		float curr = -FOV / 2;
-		for (int i = 1; i < this->getVertexCount(); i += 2) {
-			(*this)[i].position = *origin + fromAngle<float>(angle + curr, 200);
-			curr += increment;
+	else {
+		if (!showMouse) {
+			sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(*_window));
+
+			angle += (mousePos.x - lastMousePos.x) / 1000.0f;
+
+			lastMousePos = mousePos;
+
+			sf::Mouse::setPosition(sf::Vector2i(sf::Vector2f(_window->getSize()) / 2.0f));
+			lastMousePos = sf::Vector2f(sf::Mouse::getPosition(*_window));
 		}
 	}
 
@@ -140,7 +162,7 @@ void Rays::update()
 		checkLines(i, curr, &minLength);
 	}
 
-	//for (sf::CircleShape* c : circles) _window->draw(*c);
+	return angle;
 }
 
 // returns shortest distance from point to cirlce

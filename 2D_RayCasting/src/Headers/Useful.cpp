@@ -6,6 +6,7 @@ bool setupWindow()
 	settings.antialiasingLevel = 8;
 
 	_window = new sf::RenderWindow(sf::VideoMode(1000, 650), "2D_RayCasting", sf::Style::Default, settings);
+	_window->setPosition(_window->getPosition() + sf::Vector2i(0, -60));
 	_window->setVerticalSyncEnabled(true);
 
 	return (bool)_window;
