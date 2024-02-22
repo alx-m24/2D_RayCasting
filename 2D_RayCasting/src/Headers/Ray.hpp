@@ -9,12 +9,15 @@ private:
 public:
 	Rays(sf::Vector2<float>* Origin, float fov, float Increment);
 	std::vector<sf::CircleShape*> circles;
+	sf::VertexArray lines;
 public:
 	void addRay(float angle);
-	void checkCircles(int i, float curr);
+	void checkCircles(int i, float curr, float* minLength);
+	void checkLines(int i, float curr, float* minLength);
 
 	void update();
 
 	float circleSDF(float x, float y, float cx, float cy, float r);
-	float lineSDF();
+	// Zero mean no collision, else it return the magnitude betwenn the ray and the point of intersection
+	float lineSDF(sf::Vector2f p1, sf::VertexArray line, float angle);
 };

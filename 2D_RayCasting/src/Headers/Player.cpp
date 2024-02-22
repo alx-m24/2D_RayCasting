@@ -25,7 +25,7 @@ void Player::update()
 	rays->update();
 }
 
-#include <iostream>
+
 void Player::draw()
 {
 	sf::Vector2<float> winSize = sf::Vector2<float>(_window->getSize());
@@ -36,8 +36,6 @@ void Player::draw()
 
 	if (!topView) {
 		std::vector<sf::RectangleShape*> lines;
-
-		float num = _window->getSize().x / (rays->getVertexCount() / 2);
 
 		int rayNum = rays->getVertexCount() / 2;
 		float xSize = winSize.x / rayNum;
@@ -73,6 +71,7 @@ void Player::draw()
 	}
 	else {
 		for (sf::CircleShape* c : rays->circles) _window->draw(*c);
+		_window->draw(rays->lines);
 		_window->draw(*rays);
 		_window->draw(*this);
 	}
